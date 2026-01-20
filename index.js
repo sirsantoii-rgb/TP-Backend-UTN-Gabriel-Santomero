@@ -6,7 +6,7 @@ import cors from 'cors'
 import workspaceRouter from "./routes/workspace.router.js"
 import workspaceRepository from "./repository/workspace.repository.js"
 
-connectMongoDB()
+connectMongoDB() 
 
 //Crear un servidor web (Express app)
 const app = express()
