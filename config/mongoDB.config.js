@@ -32,4 +32,4 @@ export async function connectMongoDB() {
     console.log("Conexión con MongoDB Fallida!");
     console.log(error);
   }
-}
+} 
