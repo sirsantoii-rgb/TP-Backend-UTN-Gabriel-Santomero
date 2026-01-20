@@ -17,7 +17,7 @@ const app = express()
 // 🔥 CONFIGURACIÓN CORS COMPLETA (CAMBIA ESTO)
 app.use(cors({
   origin: '*', // Permite TODO temporalmente
-  credentials: true,
+  
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
 }))
