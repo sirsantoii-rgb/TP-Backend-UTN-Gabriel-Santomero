@@ -20,7 +20,7 @@ class AuthController {
             if (user) {
                 throw new ServerError('El email ya esta registrado', 400)
             }
-            let hashed_password = await bcrypt.hash(password, 8)
+            let hashed_password = await bcrypt.hash(password, 10)
             await userRepository.crear(email, hashed_password, username)
 
             const verification_email_token = jwt.sign(

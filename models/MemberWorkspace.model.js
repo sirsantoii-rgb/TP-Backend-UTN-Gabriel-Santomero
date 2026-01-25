@@ -4,27 +4,30 @@ const MemberWorkspaceSchema = new mongoose.Schema(
     {
         fk_id_user: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
+            ref: 'User',
             required: true
         },
         fk_id_workspace: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "WorkSpace",
+            ref: 'Workspace',
             required: true
         },
         created_at: {
-        type: Date,
-        default: Date.now
+            type: Date,
+            default: Date.now
         },
         role: {
             type: String,
-            enum: ["owner", "admin", "user"],
-            default: "user",
+            enum: ['Owner', 'Admin', 'User'],
+            default: 'User',
             required: true
         }
+    }
+)
 
-    })
-
-    const Membersworkspace = mongoose.model ("Member", MemberWorkspaceSchema)
-    
-    export default Membersworkspace
+const MemberWorkspace = mongoose.model('MemberWorkspace', MemberWorkspaceSchema)
+export default MemberWorkspace
+/* 
+Continuar con estos modelos:
+- ChannelMessages
+*/

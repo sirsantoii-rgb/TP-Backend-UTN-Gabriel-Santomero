@@ -3,7 +3,7 @@ import User from "../models/User.model.js";
 
 class UserRepository {
     async crear (email, password, username) {
-        await User.insertOne({email, password, username, email_verified: false})
+        await User.insertOne({email, password, username})
     }
 
     async buscarUnoPorEmail (email) {

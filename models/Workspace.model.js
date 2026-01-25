@@ -1,23 +1,23 @@
 import mongoose from "mongoose";
 
+
+/* Terminar de crear el modelo */
 const workspaceSchema = new mongoose.Schema(
     {
         fk_id_owner: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
+            ref: 'User', //Aca marcamos la "relacion"
             required: true
         },
-        titlle: {
+        title: {
             type: String,
             required: true
+        },
+        image: {
+            type: String
         },
         description: {
-            type: String,
-            required: false,
-        },
-        imagen: {
-            type: String,
-            required: false
+            type: String
         },
         created_at: {
             type: Date,
@@ -30,6 +30,5 @@ const workspaceSchema = new mongoose.Schema(
     }
 )
 
-const WorkSpace = mongoose.model ("WorkSpace", workspaceSchema)
-
-export default WorkSpace
+const Workspace = mongoose.model('Workspace', workspaceSchema)
+export default Workspace
