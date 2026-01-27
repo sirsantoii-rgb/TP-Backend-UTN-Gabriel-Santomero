@@ -6,7 +6,7 @@ const router = express.Router()
 
 router.get('/test-mongo', async (req, res) => {
   try {
-    const users = await userRepository.buscarTodos() // busca todos los usuarios
+    const users = await userRepository.obtenerTodos() // busca todos los usuarios
     res.json({ ok: true, count: users.length })
   } catch (err) {
     res.status(500).json({ ok: false, error: err.message })
