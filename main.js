@@ -1,4 +1,3 @@
-
 import { connectMongoDB } from "./config/mongoDB.config.js"
 import express from 'express'
 import authRouter from "./routes/auth.router.js"
@@ -9,17 +8,33 @@ import workspaceRepository from "./repository/workspace.repository.js"
 
 const app = express()
 
-// Middleware
-app.use(cors({origin: "https://tp-frontend-back-gabriel-santomero-opal.vercel.app",
-  credentials: true}))
+// ----- Middleware CORS -----
+const allowedOrigins = [
+  "https://tp-frontend-back-gabriel-santomero-opal.vercel.app",
+  "https://tp-frontend-back-gabriel-santomero-rosy.vercel.app"
+]
+
+app.use(cors({
+  origin: function(origin, callback){
+    // Permite requests sin origin (Postman, server-side)
+    if(!origin) return callback(null, true)
+    if(allowedOrigins.includes(origin)){
+      callback(null, true)
+    } else {
+      callback(new Error("CORS no permitido"))
+    }
+  },
+  credentials: true
+}))
+
 app.use(express.json())
 
-// Routers
+// ----- Routers -----
 app.use("/api/auth", authRouter)
 app.use("/api/workspace", workspaceRouter)
 app.use("/api/test", testRouter)
 
-// Conectar MongoDB y arrancar servidor
+// ----- Conectar MongoDB y arrancar servidor -----
 connectMongoDB()
   .then(() => {
     console.log("MongoDB listo, arrancando servidor...")
