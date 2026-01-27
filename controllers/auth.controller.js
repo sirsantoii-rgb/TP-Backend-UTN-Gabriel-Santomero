@@ -122,23 +122,14 @@ class AuthController {
             })
         }
         catch (error) {
-            /* Si tiene status decimos que es un error controlado (osea es esperable) */
-            if (error.status) {
-                return response.json({
-                    status: error.status,
-                    ok: false,
-                    message: error.message,
-                    data: null
-                })
-            }
-
-            return response.json({
-                ok: false,
-                status: 500,
-                message: "Error interno del servidor",
-                data: null
-            })
-        }
+    console.error("LOGIN ERROR:", error)   // <- esto es clave
+    return response.status(500).json({
+        ok: false,
+        status: 500,
+        message: error.message,
+        data: null
+    })
+}
 
     }
 
