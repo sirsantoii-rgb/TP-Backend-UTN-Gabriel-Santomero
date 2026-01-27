@@ -10,7 +10,8 @@ import workspaceRepository from "./repository/workspace.repository.js"
 const app = express()
 
 // Middleware
-app.use(cors())
+app.use(cors({origin: "https://tp-frontend-back-gabriel-santomero-opal.vercel.app",
+  credentials: true}))
 app.use(express.json())
 
 // Routers
