@@ -1,6 +1,7 @@
 import express from 'express'
 import testController from '../controllers/test.controller.js'
 import authMiddleware from '../middlewares/auth.middlware.js'
+import userRepository from '../repository/user.repository.js'
 
 const router = express.Router()
 
