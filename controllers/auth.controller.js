@@ -69,12 +69,10 @@ class AuthController {
                 })
             }
 
-            return response.json({
-                ok: false,
-                status: 500,
-                message: "Error interno del servidor",
-                data: null
-            })
+            return response.status(500).json({
+        ok: false,
+        message: error.message
+    })
         }
     }
 
