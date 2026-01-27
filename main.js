@@ -7,6 +7,7 @@ import cors from 'cors'
 import workspaceRouter from "./routes/workspace.router.js"
 import workspaceRepository from "./repository/workspace.repository.js"
 
+const app = express()
 connectMongoDB()
   .then(() => {
     console.log("MongoDB listo, arrancando servidor...")
@@ -23,7 +24,6 @@ connectMongoDB()
     console.error("💥 No se pudo conectar a MongoDB, servidor detenido")
   })
 //Crear un servidor web (Express app)
-const app = express()
 
 /* 
 Esto permite que otras direcciones distintas a la nuesta puedan consultar nuestro servidor
