@@ -8,7 +8,20 @@ import workspaceRouter from "./routes/workspace.router.js"
 import workspaceRepository from "./repository/workspace.repository.js"
 
 connectMongoDB()
+  .then(() => {
+    console.log("MongoDB listo, arrancando servidor...")
 
+    // Routers
+    app.use("/api/auth", authRouter)
+    // app.use("/api/workspace", workspaceRouter) // si tienes otros routers
+
+    app.listen(8080, () => {
+      console.log("🚀 Servidor escuchando en puerto 8080")
+    })
+  })
+  .catch(err => {
+    console.error("💥 No se pudo conectar a MongoDB, servidor detenido")
+  })
 //Crear un servidor web (Express app)
 const app = express()
 
