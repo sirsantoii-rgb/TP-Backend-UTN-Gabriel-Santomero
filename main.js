@@ -8,45 +8,26 @@ import workspaceRouter from "./routes/workspace.router.js"
 import workspaceRepository from "./repository/workspace.repository.js"
 
 const app = express()
+
+// Middleware
+app.use(cors())
+app.use(express.json())
+
+// Routers
+app.use("/api/auth", authRouter)
+app.use("/api/workspace", workspaceRouter)
+app.use("/api/test", testRouter)
+
+// Conectar MongoDB y arrancar servidor
 connectMongoDB()
   .then(() => {
     console.log("MongoDB listo, arrancando servidor...")
-
-    // Routers
-    app.use("/api/auth", authRouter)
-    // app.use("/api/workspace", workspaceRouter) // si tienes otros routers
-
-    app.listen(8080, () => {
-      console.log("🚀 Servidor escuchando en puerto 8080")
-    })
+    const port = process.env.PORT || 8080
+    app.listen(port, () => console.log(`🚀 Servidor escuchando en puerto ${port}`))
   })
   .catch(err => {
     console.error("💥 No se pudo conectar a MongoDB, servidor detenido")
   })
-//Crear un servidor web (Express app)
-
-/* 
-Esto permite que otras direcciones distintas a la nuesta puedan consultar nuestro servidor
-*/
-app.use(cors())
-
-//Habilita a mi servidor a recibir json por body
-/* 
-lee el request.headers.['content-type'] y si el valor es 'application/json' entonces guarda en request.body el json transformado
-*/
-app.use(express.json())
-app.use('/api/test', testRouter)
-
-
-app.use("/api/auth", authRouter)
-app.use("/api/workspace", workspaceRouter)
-
-app.listen(
-    8080, 
-    () => {
-        console.log('Nuestra app se escucha en el puerto 8080')
-    }
-)
 
 /* mail_transporter.sendMail({
     from: ENVIRONMENT.GMAIL_USERNAME,
