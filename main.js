@@ -2,7 +2,7 @@
 import { connectMongoDB } from "./config/mongoDB.config.js"
 import express from 'express'
 import authRouter from "./routes/auth.router.js"
-
+import testRouter from './routes/test.router.js'
 import cors from 'cors'
 import workspaceRouter from "./routes/workspace.router.js"
 import workspaceRepository from "./repository/workspace.repository.js"
@@ -35,7 +35,7 @@ app.use(cors())
 lee el request.headers.['content-type'] y si el valor es 'application/json' entonces guarda en request.body el json transformado
 */
 app.use(express.json())
-
+app.use('/api/test', testRouter)
 
 
 app.use("/api/auth", authRouter)
