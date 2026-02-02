@@ -183,6 +183,121 @@ class WorkspaceController {
             })
         }
     }
+
+    async getById (request, response){
+        try{
+            const {workspace, member} = request
+            response.json({
+                ok: true,
+                status: 200,
+                data: {
+                    workspace,
+                    member
+                },
+                message:'Espacio de trabajo seleccionado'
+            })
+        }
+        catch(error){
+            console.log({error})
+            /* Si tiene status decimos que es un error controlado (osea es esperable) */
+            if (error.status) {
+                return response.json({
+                    status: error.status,
+                    ok: false,
+                    message: error.message,
+                    data: null
+                })
+            }
+
+            return response.json({
+                ok: false,
+                status: 500,
+                message: "Error interno del servidor",
+                data: null
+            })
+        }
+    }
+
+    //UTILIZAR ELIMINAR MIEMBRO DE UN ESPACIO DE TRABAJOO
+    async deleteMember(request, response) {
+    try {
+        const { workspace_id, member_id } = request.params
+        const current_user_id = request.user.id
+        
+        // 1. Verificar que el usuario actual es owner
+        const isOwner = await workspaceRepository.isUserOwner(workspace_id, current_user_id)
+        if (!isOwner) {
+            return response.status(403).json({
+                ok: false,
+                message: 'Solo el owner puede eliminar miembros'
+            })
+        }
+        
+        // 2. Eliminar el miembro
+        await workspaceRepository.removeMember(member_id)
+        
+        // 3. Responder
+        return response.json({
+            ok: true,
+            message: 'Miembro eliminado exitosamente'
+        })
+        
+    } catch (error) {
+        return response.status(500).json({
+            ok: false,
+            message: 'Error al eliminar miembro'
+        })
+    }
+
+    
+}
+
+//ACTUALIZAR EL ROL DE UN MIEMBRE DELK GRUPO 
+async updateMemberRole(request, response) {
+    try {
+        const { workspace_id, member_id } = request.params
+        const { role } = request.body
+        const current_user_id = request.user.id
+        
+        // 1. Validar que el rol es válido
+        const validRoles = ['admin', 'member', 'guest']
+        if (!validRoles.includes(role)) {
+            return response.status(400).json({
+                ok: false,
+                message: 'Rol inválido. Usa: admin, member o guest'
+            })
+        }
+        
+        // 2. Verificar permisos
+        const isOwner = await workspaceRepository.isUserOwner(workspace_id, current_user_id)
+        if (!isOwner) {
+            return response.status(403).json({
+                ok: false,
+                message: 'Solo el owner puede cambiar roles'
+            })
+        }
+        
+        // 3. Actualizar rol
+        const updatedMember = await workspaceRepository.updateMemberRole(member_id, role)
+        
+        // 4. Responder
+        return response.json({
+            ok: true,
+            message: 'Rol actualizado exitosamente',
+            data: {
+                member_id: updatedMember._id,
+                user_id: updatedMember.fk_id_user,
+                role: updatedMember.role
+            }
+        })
+        
+    } catch (error) {
+        return response.status(500).json({
+            ok: false,
+            message: 'Error al actualizar rol'
+        })
+    }
+}
 }
 
 const workspaceController = new WorkspaceController()

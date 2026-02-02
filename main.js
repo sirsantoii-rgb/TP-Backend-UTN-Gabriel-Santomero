@@ -5,10 +5,12 @@ import testRouter from './routes/test.router.js'
 import cors from 'cors'
 import workspaceRouter from "./routes/workspace.router.js"
 import workspaceRepository from "./repository/workspace.repository.js"
+import messagesRepository from "./repository/messages.repository.js"
+
 
 const app = express()
 
-// ----- Middleware CORS -----
+
 const allowedOrigins = [
   "https://tp-frontend-back-gabriel-santomero-opal.vercel.app",
   "https://tp-frontend-back-gabriel-santomero-rosy.vercel.app"
@@ -16,7 +18,7 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: function(origin, callback){
-    // Permite requests sin origin (Postman, server-side)
+    
     if(!origin) return callback(null, true)
     if(allowedOrigins.includes(origin)){
       callback(null, true)
@@ -45,37 +47,3 @@ connectMongoDB()
     console.error("💥 No se pudo conectar a MongoDB, servidor detenido")
   })
 
-/* mail_transporter.sendMail({
-    from: ENVIRONMENT.GMAIL_USERNAME,
-    to: ENVIRONMENT.GMAIL_USERNAME,
-    subject: 'Probando nodemailer',
-    html: `<h1>Probando nodemailer</h1>`
-}) */
-
-/* 
-//Quiero crear un espacio de trabajo de prueba
-*/
-
-/* async function crearEspacioDeTrabajo (){
-
-    //Creo el espacio de trabajo de prueba
-    const workspace = await workspaceRepository.create(
-        '69664b767fa3b6ffd51dcd7b', //Remplazen por su id
-        'test',
-        'https://images.pexels.com/photos/414612/pexels-photo-414612.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-        'Descripcion del espacio de trabajo'
-    )
-    //Me agrego como miembro
-    await workspaceRepository.addMember(workspace._id, '69664b767fa3b6ffd51dcd7b' //Remplazen por su id, 'Owner')
-}
-
-crearEspacioDeTrabajo() */
-
-/* 
-1ero:
-    Crear espacio de trabajo
-    Agregar miembro
-
-2do: Crear endpoint para obtener espacios de trabajo asociados al usuario
-3ro: Probar con postman
-*/

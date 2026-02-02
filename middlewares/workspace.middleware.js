@@ -29,7 +29,7 @@ function workspaceMiddleware(authorized_roles = []) {
             }
 
             //Gestionar acceso por role de miembro
-            if (authorized_roles.length > 0 && authorized_roles.includes(member_selected.role)) {
+            if (authorized_roles.length > 0 && !authorized_roles.includes(member_selected.role)) {
                 throw new ServerError("No estas autorizado para hacer esta operacion", 403)
             }
 

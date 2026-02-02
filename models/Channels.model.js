@@ -1,6 +1,7 @@
 import mongoose from "mongoose"
 
-const channelSchema = mongoose.Schema({
+const channelSchema = new mongoose.Schema(
+    {
     fk_id_workspace: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Workspace',
@@ -18,7 +19,8 @@ const channelSchema = mongoose.Schema({
         type: Boolean,
         default: true
     }
-})
+    }
+)
 
 const Channel = mongoose.model('Channel', channelSchema)
 export default Channel

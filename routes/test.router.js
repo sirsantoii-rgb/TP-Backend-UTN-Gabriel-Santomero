@@ -7,7 +7,7 @@ const router = express.Router()
 
 router.get('/test-mongo', async (req, res) => {
   try {
-    const users = await userRepository.obtenerTodos() // busca todos los usuarios
+    const users = await userRepository.obtenerTodos() 
     res.json({ ok: true, count: users.length })
   } catch (err) {
     res.status(500).json({ ok: false, error: err.message })
@@ -16,6 +16,3 @@ router.get('/test-mongo', async (req, res) => {
 
 export default router
 
-/* 
-Implementar la capa de controller en el authRouter
-*/

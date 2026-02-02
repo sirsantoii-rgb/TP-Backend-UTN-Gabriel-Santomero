@@ -43,8 +43,7 @@ class AuthController {
                     <p>Necesitamos que verifiques tu mail</p>
                     <p>Haz click en "Verificar" para verificar este mail</p>
                     <a 
-                    href=href='https://tp-backend-utn-gabriel-santomero.vercel.app/api/auth/verify-email?verification_email_token=${verification_email_token}'
-
+                    href='http://localhost:8080/api/auth/verify-email?verification_email_token=${verification_email_token}'
                     >Verificar</a>
                     <br>
                     <span>Si desconoces este registro desestima este mail</span>
@@ -70,10 +69,12 @@ class AuthController {
                 })
             }
 
-            return response.status(500).json({
-        ok: false,
-        message: error.message
-    })
+            return response.json({
+                ok: false,
+                status: 500,
+                message: "Error interno del servidor",
+                data: null
+            })
         }
     }
 
@@ -123,14 +124,23 @@ class AuthController {
             })
         }
         catch (error) {
-    console.error("LOGIN ERROR:", error)   // <- esto es clave
-    return response.status(500).json({
-        ok: false,
-        status: 500,
-        message: error.message,
-        data: null
-    })
-}
+            /* Si tiene status decimos que es un error controlado (osea es esperable) */
+            if (error.status) {
+                return response.json({
+                    status: error.status,
+                    ok: false,
+                    message: error.message,
+                    data: null
+                })
+            }
+
+            return response.json({
+                ok: false,
+                status: 500,
+                message: "Error interno del servidor",
+                data: null
+            })
+        }
 
     }
 
@@ -213,12 +223,3 @@ class AuthController {
 
 const authController = new AuthController()
 export default authController
-
-
-
-/* 
-condicion sobre una variable
-un bucle de 100 a 1000 registros (donde no se consulta a ningun servicio externo)
-una consulta a DB (Debatible porque si la DB tiene millones de registros puede ser mas costoso)
-una consulta a otro servidor
-*/
