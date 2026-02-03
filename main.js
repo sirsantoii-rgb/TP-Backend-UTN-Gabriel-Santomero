@@ -8,13 +8,7 @@ import workspaceRepository from "./repository/workspace.repository.js"
 import messagesRepository from "./repository/messages.repository.js"
 
 
-console.log("=== 🚨 VERIFICANDO VARIABLES EN VERCEL ===");
-console.log("GMAIL_USERNAME:", process.env.GMAIL_USERNAME || "❌ NO DEFINIDA");
-console.log("GMAIL_PASSWORD:", process.env.GMAIL_PASSWORD ? "✅ DEFINIDA" : "❌ NO DEFINIDA");
-console.log("URL_FRONTEND:", process.env.URL_FRONTEND || "❌ NO DEFINIDA");
-console.log("JWT_SECRET_KEY:", process.env.JWT_SECRET_KEY ? "✅ DEFINIDA" : "❌ NO DEFINIDA");
 
-console.log("=== FIN VERIFICACIÓN ===");
 
 const app = express()
 
