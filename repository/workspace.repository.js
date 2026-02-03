@@ -65,7 +65,7 @@ class WorkspaceRepository {
         return await Workspace.findByIdAndUpdate(
             workspace_id,
             updateData,
-            { new: true } // Devuelve el documento actualizado
+            { new: true } 
         )
     }
 
@@ -107,7 +107,7 @@ class WorkspaceRepository {
     async getWorkspaceMembers(workspace_id) {
         return await MemberWorkspace.find({ 
             fk_id_workspace: workspace_id 
-        }).populate('fk_id_user', 'email username') // Popula datos básicos del usuario
+        }).populate('fk_id_user', 'email username') 
     }
 }
 

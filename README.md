@@ -1,12 +1,13 @@
-API REST construida con Node.js, Express y MongoDB que implementa un sistema de autenticación JWT y CRUD para entidades protegidas.
+Una aplicación web hecha con Node.js que permite registrarse, iniciar sesión de forma segura.
+
+
 
 Registro de usuarios con verificación por email:
 
 - Login con JWT (JSON Web Tokens)
 - Middleware de autenticación para rutas protegidas
-- CRUD completo de entidades (solo accesible por usuarios autenticados)
 - Validación de datos y manejo de errores
-- Deploy en la nube (Vercel/Render/Railway) 
+- Deploy en la nube (en el servidor de Vercel) 
 
 
 
@@ -16,13 +17,13 @@ Requisitos Previos:
 - Node.js 
 - MongoDB 
 - npm 
-- Servicio de Vercel.
+
 
 
 
 Instalación:
 
-npm install (instala todas las dependencias:
+npm install (instala todas las dependencias que usamos en la cursada:
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
@@ -31,5 +32,4 @@ npm install (instala todas las dependencias:
     "mongoose": "^9.0.1",
     "nodemailer": "^7.0.12")
 
-correr con: "start": "node main.js",
-            "dev": "node --watch main.js"
+correr con: npm run dev
