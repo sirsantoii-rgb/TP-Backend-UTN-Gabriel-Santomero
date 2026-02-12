@@ -19,8 +19,13 @@ authRouter.get(
     authController.verifyEmail
 )
 authRouter.post(
-    '/forgot-password',
+    '/forgot-password', 
     authController.forgotPassword
+)
+
+authRouter.post(
+    '/reset-password', 
+    authController.resetPassword
 )
 
 export default authRouter
