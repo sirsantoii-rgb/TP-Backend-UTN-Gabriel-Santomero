@@ -145,56 +145,60 @@ class AuthController {
     }
 
 async forgotPassword(request, response) {
-        try {
-            const { email } = request.body
-            if (!email) throw new ServerError('El email es obligatorio', 400)
+    try {
+        const { email } = request.body
+        if (!email) throw new ServerError('El email es obligatorio', 400)
 
-            const user = await userRepository.buscarUnoPorEmail(email)
-            if (!user) throw new ServerError('No existe un usuario con ese email', 404)
+        const user = await userRepository.buscarUnoPorEmail(email)
+        if (!user) throw new ServerError('No existe un usuario con ese email', 404)
 
-            // Creamos un token que expire rápido (ej. 1 hora)
-            const reset_token = jwt.sign({ email }, ENVIRONMENT.JWT_SECRET_KEY, { expiresIn: '1h' })
+        const reset_token = jwt.sign({ email }, ENVIRONMENT.JWT_SECRET_KEY, { expiresIn: '1h' })
 
-            await mail_transporter.sendMail({
-                from: ENVIRONMENT.GMAIL_USERNAME,
-                to: email,
-                subject: 'Recuperar Contraseña',
-                html: `
-                    <h1>Recuperación de contraseña</h1>
-                    <p>Haz clic en el enlace para cambiar tu clave:</p>
-                    <a href="${ENVIRONMENT.URL_FRONTEND}/reset-password?token=${reset_token}">Restablecer contraseña</a>
-                `
-            })
+        await mail_transporter.sendMail({
+            from: ENVIRONMENT.GMAIL_USERNAME,
+            to: email,
+            subject: 'Recuperar Contraseña',
+            html: `
+                <h1>Recuperación de contraseña</h1>
+                <p>Haz clic en el enlace para cambiar tu clave:</p>
+                <a href="${ENVIRONMENT.URL_FRONTEND}/reset-password?token=${reset_token}">Restablecer contraseña</a>
+            `
+        })
 
-            return response.json({ ok: true, message: 'Email de recuperación enviado' })
-        } catch (error) {
-            
-        }
+        return response.json({ ok: true, status: 200, message: 'Email de recuperación enviado' })
+    } catch (error) {
+        // IMPORTANTE: Rellenar el catch para que Postman reciba respuesta
+        return response.json({
+            ok: false,
+            status: error.status || 500,
+            message: error.message || "Error interno"
+        })
     }
+}
 
-    async resetPassword(request, response) {
-        try {
-            const { token, password } = request.body
-            if (!token || !password) throw new ServerError('Faltan datos', 400)
+async resetPassword(request, response) {
+    try {
+        const { token, password } = request.body
+        if (!token || !password) throw new ServerError('Faltan datos', 400)
 
-            // 1. paso para verificar si el toquen esta bien
-            const { email } = jwt.verify(token, ENVIRONMENT.JWT_SECRET_KEY)
+        const { email } = jwt.verify(token, ENVIRONMENT.JWT_SECRET_KEY)
+        const hashed_password = await bcrypt.hash(password, 10)
 
-            // 2. Encriptar la nueva contraseña
-            const hashed_password = await bcrypt.hash(password, 10)
+        await userRepository.actualizarPorEmail(email, { password: hashed_password })
 
-            // 3. Actualizar en la base de datos
-            await userRepository.actualizarPorEmail(email, { password: hashed_password })
-
-            return response.json({ ok: true, message: 'Contraseña actualizada correctamente' })
-        } catch (error) {
-            // Si el token expiró, jwt.verify lanzará un error que puedes capturar aquí
-            if (error instanceof jwt.TokenExpiredError) {
-                return response.json({ ok: false, status: 401, message: "El enlace ha expirado" })
-            }
-           
+        return response.json({ ok: true, status: 200, message: 'Contraseña actualizada correctamente' })
+    } catch (error) {
+        // Manejo específico para tokens inválidos o expirados
+        if (error instanceof jwt.JsonWebTokenError) {
+            return response.json({ ok: false, status: 401, message: "Token inválido o expirado" })
         }
+        return response.json({
+            ok: false,
+            status: error.status || 500,
+            message: error.message || "Error interno"
+        })
     }
+}
 
     async verifyEmail(request, response) {
         try {
