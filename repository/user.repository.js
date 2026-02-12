@@ -46,7 +46,19 @@ class UserRepository {
         const usuario = await User.findById(user_id)
         return usuario
     }
-    
+    async actualizarPorEmail(email, datos) {
+        try {
+            
+            return await User.findOneAndUpdate(
+                { email: email }, 
+                { $set: datos }, 
+                { new: true } 
+            )
+        } catch (error) {
+            throw error
+        }
+    }
+
 }
 
 const userRepository = new UserRepository()

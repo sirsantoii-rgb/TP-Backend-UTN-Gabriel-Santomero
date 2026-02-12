@@ -98,7 +98,7 @@ class AuthController {
             }
 
             if (!(await bcrypt.compare(password, usuario_encontrado.password))) {
-                /* Respondemos igual a que si no existiese para mayor seguridad */
+                
                 throw new ServerError('Credenciales invalidas', 401)
             }
 
@@ -124,7 +124,7 @@ class AuthController {
             })
         }
         catch (error) {
-            /* Si tiene status decimos que es un error controlado (osea es esperable) */
+            
             if (error.status) {
                 return response.json({
                     status: error.status,
@@ -142,6 +142,58 @@ class AuthController {
             })
         }
 
+    }
+
+async forgotPassword(request, response) {
+        try {
+            const { email } = request.body
+            if (!email) throw new ServerError('El email es obligatorio', 400)
+
+            const user = await userRepository.buscarUnoPorEmail(email)
+            if (!user) throw new ServerError('No existe un usuario con ese email', 404)
+
+            // Creamos un token que expire rápido (ej. 1 hora)
+            const reset_token = jwt.sign({ email }, ENVIRONMENT.JWT_SECRET_KEY, { expiresIn: '1h' })
+
+            await mail_transporter.sendMail({
+                from: ENVIRONMENT.GMAIL_USERNAME,
+                to: email,
+                subject: 'Recuperar Contraseña',
+                html: `
+                    <h1>Recuperación de contraseña</h1>
+                    <p>Haz clic en el enlace para cambiar tu clave:</p>
+                    <a href="${ENVIRONMENT.URL_FRONTEND}/reset-password?token=${reset_token}">Restablecer contraseña</a>
+                `
+            })
+
+            return response.json({ ok: true, message: 'Email de recuperación enviado' })
+        } catch (error) {
+            
+        }
+    }
+
+    async resetPassword(request, response) {
+        try {
+            const { token, password } = request.body
+            if (!token || !password) throw new ServerError('Faltan datos', 400)
+
+            // 1. paso para verificar si el toquen esta bien
+            const { email } = jwt.verify(token, ENVIRONMENT.JWT_SECRET_KEY)
+
+            // 2. Encriptar la nueva contraseña
+            const hashed_password = await bcrypt.hash(password, 10)
+
+            // 3. Actualizar en la base de datos
+            await userRepository.actualizarPorEmail(email, { password: hashed_password })
+
+            return response.json({ ok: true, message: 'Contraseña actualizada correctamente' })
+        } catch (error) {
+            // Si el token expiró, jwt.verify lanzará un error que puedes capturar aquí
+            if (error instanceof jwt.TokenExpiredError) {
+                return response.json({ ok: false, status: 401, message: "El enlace ha expirado" })
+            }
+           
+        }
     }
 
     async verifyEmail(request, response) {
