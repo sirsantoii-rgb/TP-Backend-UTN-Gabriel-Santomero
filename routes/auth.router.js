@@ -18,5 +18,9 @@ authRouter.get(
     '/verify-email',
     authController.verifyEmail
 )
+authRouter.get(
+    '/forgot-password',
+    authController.forgotPassword
+)
 
 export default authRouter
