@@ -18,7 +18,7 @@ authRouter.get(
     '/verify-email',
     authController.verifyEmail
 )
-authRouter.get(
+authRouter.post(
     '/forgot-password',
     authController.forgotPassword
 )
