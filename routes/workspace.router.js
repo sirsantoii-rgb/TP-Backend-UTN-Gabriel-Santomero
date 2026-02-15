@@ -22,6 +22,7 @@ workspaceRouter.post(
 )
 workspaceRouter.get('/:workspace_id/members/accept-invitation', workspaceController.acceptInvitation)
 
+// CHANNELS - Listar y crear
 workspaceRouter.get(
     '/:workspace_id/channels',
     authMiddleware,
@@ -36,7 +37,22 @@ workspaceRouter.post(
     channelController.create
 )
 
+// CHANNELS - Renombrar y eliminar (NUEVAS RUTAS)
+workspaceRouter.put(
+    '/:workspace_id/channels/:channel_id',
+    authMiddleware,
+    workspaceMiddleware(['Owner', 'Admin']),
+    channelController.rename
+)
 
+workspaceRouter.delete(
+    '/:workspace_id/channels/:channel_id',
+    authMiddleware,
+    workspaceMiddleware(['Owner', 'Admin']),
+    channelController.deleteChannel
+)
+
+// MESSAGES
 workspaceRouter.post(
     '/:workspace_id/channels/:channel_id/messages',
     authMiddleware,
@@ -45,7 +61,6 @@ workspaceRouter.post(
     messagesController.create
 )
 
-
 workspaceRouter.get(
     '/:workspace_id/channels/:channel_id/messages',
     authMiddleware,
@@ -53,6 +68,5 @@ workspaceRouter.get(
     channelMiddleware,
     messagesController.getByChannelId
 )
-
 
 export default workspaceRouter
