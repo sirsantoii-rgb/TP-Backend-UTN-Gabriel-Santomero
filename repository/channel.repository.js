@@ -24,11 +24,13 @@ class ChannelRepository {
 
     // NUEVA: Para eliminar el canal
     async delete(channel_id, workspace_id){
-        return await Channel.findOneAndDelete({
-            _id: channel_id, 
-            fk_id_workspace: workspace_id 
-        })
-    }
+    const result = await Channel.findOneAndDelete({
+        _id: channel_id, 
+        fk_id_workspace: workspace_id 
+    })
+    console.log(' Resultado de eliminación:', result) 
+    return result
+}
 }
 
 const channelRepository = new ChannelRepository()
