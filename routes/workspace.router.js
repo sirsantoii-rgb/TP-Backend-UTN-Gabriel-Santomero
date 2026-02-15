@@ -11,7 +11,7 @@ const workspaceRouter = express.Router()
 workspaceRouter.get('/', authMiddleware, workspaceController.getWorkspaces)
 workspaceRouter.post('/', authMiddleware, workspaceController.create)
 
-workspaceRouter.get('/:workspace_id', authMiddleware, workspaceMiddleware(), workspaceController.getById)
+workspaceRouter.get('/:workspace_id', authMiddleware, workspaceMiddleware, workspaceController.getById)
 
 workspaceRouter.delete('/:workspace_id', authMiddleware, workspaceController.delete)
 workspaceRouter.post(
