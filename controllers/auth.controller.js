@@ -33,7 +33,7 @@ class AuthController {
                 } */
             )
 
-            mail_transporter.sendMail(
+            await mail_transporter.sendMail(
                 {
                     from: ENVIRONMENT.GMAIL_USERNAME,
                     to: email,
