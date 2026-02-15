@@ -15,7 +15,8 @@ const app = express()
 
 const allowedOrigins = [
   "https://tp-frontend-back-gabriel-santomero-opal.vercel.app",
-  "https://tp-frontend-back-gabriel-santomero-rosy.vercel.app"
+  "https://tp-frontend-back-gabriel-santomero-rosy.vercel.app",
+  "https://tp-frontend-back-gabriel-santomero.vercel.app"
 ]
 
 app.use(cors({
