@@ -161,7 +161,7 @@ class WorkspaceController {
             const {id, workspace: workspace_id, role} = payload 
             await workspaceRepository.addMember(workspace_id, id, role)
 
-            response.redirect(`${ENVIRONMENT.URL_FRONTEND}/`)
+            response.redirect(`https://tp-frontend-back-gabriel-santomero-opal.vercel.app`)
         }
         catch(error){
             console.log({error})
