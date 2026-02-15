@@ -5,20 +5,36 @@ import workspaceMiddleware from "../middlewares/workspace.middleware.js";
 
 const channelRouter = express.Router();
 
-// Nota: Como los canales dependen de un Workspace, 
-// usualmente pasamos el workspace_id en la ruta
-channelRouter.post(
-    '/:workspace_id', 
-    authMiddleware, 
-    workspaceMiddleware(['Owner', 'Admin']), // Solo jefes crean canales
-    channelController.create
-);
-
+// Obtener todos los canales del workspace
 channelRouter.get(
     '/:workspace_id', 
     authMiddleware, 
     workspaceMiddleware(), 
     channelController.getAllByWorkspaceId
+);
+
+// Crear canal (Solo Owner/Admin)
+channelRouter.post(
+    '/:workspace_id', 
+    authMiddleware, 
+    workspaceMiddleware(['Owner', 'Admin']), 
+    channelController.create
+);
+
+// Renombrar canal (Solo Owner/Admin)
+channelRouter.put(
+    '/:workspace_id/:channel_id', 
+    authMiddleware, 
+    workspaceMiddleware(['Owner', 'Admin']), 
+    channelController.rename
+);
+
+// Eliminar canal (Solo Owner/Admin)
+channelRouter.delete(
+    '/:workspace_id/:channel_id', 
+    authMiddleware, 
+    workspaceMiddleware(['Owner', 'Admin']), 
+    channelController.deleteChannel
 );
 
 export default channelRouter;
