@@ -1,20 +1,24 @@
 import MemberWorkspace from "../models/MemberWorkspace.model.js";
 import Workspace from "../models/Workspace.model.js";
+import mongoose from "mongoose";
 
 class WorkspaceRepository {
 
-    async getById (workspace_id){
-        return await Workspace.findById(workspace_id)
+    async getById(workspace_id) {
+        // Validar que sea un ObjectId válido antes de consultar
+        if (!mongoose.Types.ObjectId.isValid(workspace_id)) {
+            return null;
+        }
+        return await Workspace.findById(workspace_id).lean();
     }
+
     async getWorkspacesByUserId(user_id){
-        //Busco a todos los miembros que pertenezcan al usuario
-        //Esto seria buscar todas mis membresias
         const workspaces = await MemberWorkspace.find({fk_id_user: user_id})
         .populate({
             path: 'fk_id_workspace',
             match: {active: true}
-        }) //Esto permite expandir sobre la referencia a la tabla de espacios de trabajo
-
+        })
+        .lean();
 
         const members_workspace = workspaces.filter((member) => member.fk_id_workspace !== null) 
         return members_workspace.map(
@@ -26,12 +30,12 @@ class WorkspaceRepository {
                     workspace_image: member_workspace.fk_id_workspace.image,
                     workspace_title: member_workspace.fk_id_workspace.title,
                     workspace_id: member_workspace.fk_id_workspace._id
-                    
                 }
             }
         )
     }
-    async create (fk_id_owner, title, image, description){
+
+    async create(fk_id_owner, title, image, description){
         const workspace = await Workspace.create({
             fk_id_owner,
             title,
@@ -41,7 +45,7 @@ class WorkspaceRepository {
         return workspace
     }
 
-    async addMember (workspace_id, user_id, role){
+    async addMember(workspace_id, user_id, role){
         const member = await MemberWorkspace.create({
             fk_id_workspace: workspace_id,
             fk_id_user: user_id,
@@ -50,9 +54,15 @@ class WorkspaceRepository {
         return member
     }
 
-    //Obtener miembro de un espacio de trabajo por id de espacio de trabajo y id de usuario
     async getMemberByWorkspaceIdAndUserId(workspace_id, user_id){
-        const member = await MemberWorkspace.findOne({fk_id_workspace: workspace_id, fk_id_user: user_id})
+        // Validar ObjectIds antes de consultar
+        if (!mongoose.Types.ObjectId.isValid(workspace_id) || !mongoose.Types.ObjectId.isValid(user_id)) {
+            return null;
+        }
+        const member = await MemberWorkspace.findOne({
+            fk_id_workspace: workspace_id, 
+            fk_id_user: user_id
+        }).lean();
         return member
     }
 
@@ -60,21 +70,18 @@ class WorkspaceRepository {
         await Workspace.findByIdAndUpdate(workspace_id, {active: false})
     }
 
-    // 1. Actualizar espacio de trabajo (para PUT /:workspace_id)
     async updateWorkspace(workspace_id, updateData) {
         return await Workspace.findByIdAndUpdate(
             workspace_id,
             updateData,
-            { new: true } 
-        )
+            { new: true }
+        ).lean();
     }
 
-    // 2. Eliminar miembro por ID de miembro (para DELETE /:workspace_id/members/:member_id)
     async removeMember(member_id) {
         return await MemberWorkspace.findByIdAndDelete(member_id)
     }
 
-    // 3. Eliminar miembro por workspace_id y user_id (alternativa útil)
     async removeMemberByUser(workspace_id, user_id) {
         return await MemberWorkspace.findOneAndDelete({
             fk_id_workspace: workspace_id,
@@ -82,32 +89,32 @@ class WorkspaceRepository {
         })
     }
 
-    // 4. Actualizar rol de miembro (para PUT /:workspace_id/members/:member_id)
     async updateMemberRole(member_id, newRole) {
         return await MemberWorkspace.findByIdAndUpdate(
             member_id,
             { role: newRole },
             { new: true }
-        )
+        ).lean();
     }
 
-    // 5. Obtener miembro por ID de miembro (útil para validaciones)
     async getMemberById(member_id) {
-        return await MemberWorkspace.findById(member_id).populate('fk_id_user')
+        return await MemberWorkspace.findById(member_id)
+            .populate('fk_id_user')
+            .lean();
     }
 
-    // 6. Verificar si usuario es owner del workspace
     async isUserOwner(workspace_id, user_id) {
-        const workspace = await Workspace.findById(workspace_id)
+        const workspace = await Workspace.findById(workspace_id).lean();
         if (!workspace) return false
         return workspace.fk_id_owner.toString() === user_id.toString()
     }
 
-    // 7. Obtener todos los miembros de un workspace
     async getWorkspaceMembers(workspace_id) {
         return await MemberWorkspace.find({ 
             fk_id_workspace: workspace_id 
-        }).populate('fk_id_user', 'email username') 
+        })
+        .populate('fk_id_user', 'email username')
+        .lean();
     }
 }
 
