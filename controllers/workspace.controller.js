@@ -157,30 +157,34 @@ class WorkspaceController {
     try {
         const { invitation_token } = request.query;
 
-        // 1. Validar Token
+        // 1. Validar y decodificar el Token
         const payload = jwt.verify(invitation_token, ENVIRONMENT.JWT_SECRET_KEY);
         
-        // EXTRAEMOS TODO DEL PAYLOAD (Aquí está la clave)
-        // En addMemberRequest guardaste 'workspace', no 'workspace_id'
+        // IMPORTANTE: En addMemberRequest guardaste el campo como 'workspace'
+        // Así que aquí lo extraemos como 'workspace'
         const { id, workspace, role } = payload; 
 
-        // 2. Verificación de seguridad usando los datos del TOKEN
+        console.log("Datos del token decodificados:", { id, workspace, role });
+
+        // 2. Usamos 'workspace' (que es el ID) para buscar y agregar
         const already_member = await workspaceRepository.getMemberByWorkspaceIdAndUserId(workspace, id);
 
         if (!already_member) {
-            // 3. Agregar a la DB usando 'workspace' del token
+            // Guardamos usando los datos seguros del token
             await workspaceRepository.addMember(workspace, id, role);
-            console.log(`Usuario ${id} agregado exitosamente al workspace ${workspace}`);
+            console.log(`¡Éxito! Usuario ${id} agregado al workspace ${workspace}`);
+        } else {
+            console.log("El usuario ya era miembro.");
         }
 
+        // 3. Redirección al Front
         return response.redirect(`https://tp-frontend-back-gabriel-santomero-opal.vercel.app/`);
 
     } catch (error) {
-        console.log("Error en acceptInvitation:", error);
-        return response.redirect(`https://tp-frontend-back-gabriel-santomero-opal.vercel.app/login?error=invalid_invitation`);
+        console.error("Error al aceptar invitación:", error);
+        return response.redirect(`https://tp-frontend-back-gabriel-santomero-opal.vercel.app/login?error=invalid_token`);
     }
 }
-
     async getById (request, response){
         try{
             const {workspace, member} = request
