@@ -20,6 +20,7 @@ workspaceRouter.post(
     workspaceMiddleware(['Owner', 'Admin']), 
     workspaceController.addMemberRequest
 )
+
 workspaceRouter.get('/:workspace_id/members/accept-invitation', workspaceController.acceptInvitation)
 
 // CHANNELS - Listar y crear

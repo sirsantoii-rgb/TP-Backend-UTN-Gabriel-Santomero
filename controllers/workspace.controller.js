@@ -153,36 +153,38 @@ class WorkspaceController {
 
     }
 
-    async acceptInvitation (request, response){
-        try{
-            const {invitation_token} = request.query
+    async acceptInvitation(request, response) {
+    try {
+        const { invitation_token } = request.query;
+        // El workspace_id viene de la URL (params), aunque ya lo tengamos en el token
+        const { workspace_id } = request.params; 
 
-            const payload = jwt.verify(invitation_token, ENVIRONMENT.JWT_SECRET_KEY)
-            const {id, workspace: workspace_id, role} = payload 
-            await workspaceRepository.addMember(workspace_id, id, role)
+        // 1. Validar Token
+        const payload = jwt.verify(invitation_token, ENVIRONMENT.JWT_SECRET_KEY);
+        const { id, role } = payload; 
 
-            response.redirect(`https://tp-frontend-back-gabriel-santomero-opal.vercel.app`)
+        // 2. Verificación de seguridad: ¿Ya es miembro?
+        // Esto evita que el servidor lance Error 500 si el usuario hace click dos veces
+        const already_member = await workspaceRepository.getMemberByWorkspaceIdAndUserId(workspace_id, id);
+
+        if (!already_member) {
+            // 3. Agregar a la DB
+            await workspaceRepository.addMember(workspace_id, id, role);
+            console.log(`Usuario ${id} agregado exitosamente al workspace ${workspace_id}`);
         }
-        catch(error){
-            console.log({error})
-            /* Si tiene status decimos que es un error controlado (osea es esperable) */
-            if (error.status) {
-                return response.json({
-                    status: error.status,
-                    ok: false,
-                    message: error.message,
-                    data: null
-                })
-            }
 
-            return response.json({
-                ok: false,
-                status: 500,
-                message: "Error interno del servidor",
-                data: null
-            })
-        }
+        // 4. REDIRECCIÓN AL FRONTEND
+        // Forzamos la URL del front para asegurarnos de que llegue
+        return response.redirect(`https://tp-frontend-back-gabriel-santomero-opal.vercel.app/`);
+
+    } catch (error) {
+        console.log("Error en acceptInvitation:", error);
+        
+        // Si hay error (token expirado, etc), igual lo mandamos al front
+        // pero podemos pasarle un parámetro de error para que React lo maneje
+        return response.redirect(`https://tp-frontend-back-gabriel-santomero-opal.vercel.app/login?error=invalid_invitation`);
     }
+}
 
     async getById (request, response){
         try{
