@@ -6,31 +6,39 @@ class WorkspaceRepository {
     async getById (workspace_id){
         return await Workspace.findById(workspace_id)
     }
-    async getWorkspacesByUserId(user_id){
-        //Busco a todos los miembros que pertenezcan al usuario
-        //Esto seria buscar todas mis membresias
-        const workspaces = await MemberWorkspace.find({fk_id_user: user_id})
+    async getWorkspacesByUserId(user_id) {
+    // 1. Buscas tus membresías
+    const memberships = await MemberWorkspace.find({ fk_id_user: user_id })
         .populate({
             path: 'fk_id_workspace',
-            match: {active: true}
-        }) //Esto permite expandir sobre la referencia a la tabla de espacios de trabajo
+            match: { active: true }
+        });
 
+    // 2. Filtramos los que no son null (por el match active:true)
+    const members_workspace = memberships.filter((member) => member.fk_id_workspace !== null);
 
-        const members_workspace = workspaces.filter((member) => member.fk_id_workspace !== null) 
-        return members_workspace.map(
-            (member_workspace) => {
-                return {
-                    member_id: member_workspace._id,
-                    member_role: member_workspace.role,
-                    member_id_user: member_workspace.fk_id_user,
-                    workspace_image: member_workspace.fk_id_workspace.image,
-                    workspace_title: member_workspace.fk_id_workspace.title,
-                    workspace_id: member_workspace.fk_id_workspace._id
-                    
-                }
-            }
-        )
-    }
+    // 3. Usamos Promise.all para poder usar "await" dentro del map y contar los miembros
+    return await Promise.all(
+        members_workspace.map(async (member_workspace) => {
+            
+            // AGREGAMOS ESTA LÍNEA: Cuenta cuántos miembros hay en este workspace específico
+            const contador = await MemberWorkspace.countDocuments({ 
+                fk_id_workspace: member_workspace.fk_id_workspace._id 
+            });
+
+            return {
+                member_id: member_workspace._id,
+                member_role: member_workspace.role,
+                member_id_user: member_workspace.fk_id_user,
+                workspace_image: member_workspace.fk_id_workspace.image,
+                workspace_title: member_workspace.fk_id_workspace.title,
+                workspace_id: member_workspace.fk_id_workspace._id,
+                // AGREGAMOS ESTA PROPIEDAD:
+                members_count: contador 
+            };
+        })
+    );
+}
     async create (fk_id_owner, title, image, description){
         const workspace = await Workspace.create({
             fk_id_owner,
