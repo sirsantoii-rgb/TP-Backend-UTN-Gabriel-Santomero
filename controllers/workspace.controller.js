@@ -249,6 +249,26 @@ class WorkspaceController {
     
 }
 
+async getMembers(request, response) {
+    try {
+        const { workspace_id } = request.params;
+        // Usamos el método 7 que ya tenías en tu repositorio
+        const members = await workspaceRepository.getWorkspaceMembers(workspace_id);
+        
+        response.json({
+            ok: true,
+            status: 200,
+            data: {
+                members
+            }
+        });
+    } catch (error) {
+        response.status(500).json({
+            ok: false,
+            message: "Error al obtener los miembros"
+        });
+    }
+}
 //ACTUALIZAR EL ROL DE UN MIEMBRE DELK GRUPO 
 async updateMemberRole(request, response) {
     try {

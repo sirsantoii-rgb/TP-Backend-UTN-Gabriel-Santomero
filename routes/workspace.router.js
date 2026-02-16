@@ -69,5 +69,10 @@ workspaceRouter.get(
     channelMiddleware,
     messagesController.getByChannelId
 )
-
+workspaceRouter.get(
+    '/:workspace_id/members', 
+    authMiddleware, 
+    workspaceMiddleware(), 
+    workspaceController.getMembers // <--- La función que acabamos de crear
+)
 export default workspaceRouter
