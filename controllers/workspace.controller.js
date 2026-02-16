@@ -156,32 +156,27 @@ class WorkspaceController {
     async acceptInvitation(request, response) {
     try {
         const { invitation_token } = request.query;
-        // El workspace_id viene de la URL (params), aunque ya lo tengamos en el token
-        const { workspace_id } = request.params; 
 
         // 1. Validar Token
         const payload = jwt.verify(invitation_token, ENVIRONMENT.JWT_SECRET_KEY);
-        const { id, role } = payload; 
+        
+        // EXTRAEMOS TODO DEL PAYLOAD (Aquí está la clave)
+        // En addMemberRequest guardaste 'workspace', no 'workspace_id'
+        const { id, workspace, role } = payload; 
 
-        // 2. Verificación de seguridad: ¿Ya es miembro?
-        // Esto evita que el servidor lance Error 500 si el usuario hace click dos veces
-        const already_member = await workspaceRepository.getMemberByWorkspaceIdAndUserId(workspace_id, id);
+        // 2. Verificación de seguridad usando los datos del TOKEN
+        const already_member = await workspaceRepository.getMemberByWorkspaceIdAndUserId(workspace, id);
 
         if (!already_member) {
-            // 3. Agregar a la DB
-            await workspaceRepository.addMember(workspace_id, id, role);
-            console.log(`Usuario ${id} agregado exitosamente al workspace ${workspace_id}`);
+            // 3. Agregar a la DB usando 'workspace' del token
+            await workspaceRepository.addMember(workspace, id, role);
+            console.log(`Usuario ${id} agregado exitosamente al workspace ${workspace}`);
         }
 
-        // 4. REDIRECCIÓN AL FRONTEND
-        // Forzamos la URL del front para asegurarnos de que llegue
         return response.redirect(`https://tp-frontend-back-gabriel-santomero-opal.vercel.app/`);
 
     } catch (error) {
         console.log("Error en acceptInvitation:", error);
-        
-        // Si hay error (token expirado, etc), igual lo mandamos al front
-        // pero podemos pasarle un parámetro de error para que React lo maneje
         return response.redirect(`https://tp-frontend-back-gabriel-santomero-opal.vercel.app/login?error=invalid_invitation`);
     }
 }
