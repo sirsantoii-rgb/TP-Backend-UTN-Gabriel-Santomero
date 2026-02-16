@@ -42,13 +42,15 @@ class WorkspaceRepository {
     }
 
     async addMember (workspace_id, user_id, role){
-        const member = await MemberWorkspace.create({
-            fk_id_workspace: workspace_id,
-            fk_id_user: user_id,
-            role
-        })
-        return member
-    }
+    // Usamos create, pero nos aseguramos de que los nombres de los campos
+    // sean exactamente los mismos que usas en el find() de getWorkspacesByUserId
+    const member = await MemberWorkspace.create({
+        fk_id_workspace: workspace_id,
+        fk_id_user: user_id, // Asegúrate que en el JWT este 'id' sea el _id de MongoDB
+        role: role
+    })
+    return member
+}
 
     //Obtener miembro de un espacio de trabajo por id de espacio de trabajo y id de usuario
     async getMemberByWorkspaceIdAndUserId(workspace_id, user_id){
