@@ -25,12 +25,9 @@ class AuthController {
 
             const verification_email_token = jwt.sign(
                 {
-                    email: email //Guardamos el email del usuario que se quiere registrar
+                    email: email 
                 },
-                ENVIRONMENT.JWT_SECRET_KEY/* ,
-                {
-                    expiresIn: '7d'
-                } */
+                ENVIRONMENT.JWT_SECRET_KEY
             )
 
             await mail_transporter.sendMail(
@@ -59,7 +56,7 @@ class AuthController {
             })
         }
         catch (error) {
-            /* Si tiene status decimos que es un error controlado (osea es esperable) */
+            
             if (error.status) {
                 return response.json({
                     status: error.status,
@@ -81,9 +78,7 @@ class AuthController {
     async login(request, response) {
         try {
             const { email, password } = request.body
-            /* 
-            Aplicar validaciones sobre el email y la password
-            */
+            
             if (!email) {
                 throw new ServerError('Debes enviar un email', 400)
             }
@@ -167,7 +162,7 @@ async forgotPassword(request, response) {
 
         return response.json({ ok: true, status: 200, message: 'Email de recuperación enviado' })
     } catch (error) {
-        // IMPORTANTE: Rellenar el catch para que Postman reciba respuesta
+        
         return response.json({
             ok: false,
             status: error.status || 500,
@@ -188,7 +183,7 @@ async resetPassword(request, response) {
 
         return response.json({ ok: true, status: 200, message: 'Contraseña actualizada correctamente' })
     } catch (error) {
-        // Manejo específico para tokens inválidos o expirados
+        
         if (error instanceof jwt.JsonWebTokenError) {
             return response.json({ ok: false, status: 401, message: "Token inválido o expirado" })
         }
@@ -229,19 +224,9 @@ async resetPassword(request, response) {
                     email_verified: true
                 }
             )
-           /*  return response.json(
-                {
-                    ok: true,
-                    status: 200,
-                    message: "usuario verificado",
-                    data: null
-                }
-            ) */
-            /* 
-            Redireccionar al frontend 
-            */
+           
             return response.redirect(
-                ENVIRONMENT.URL_FRONTEND + '/login?from=email-validated' //La querystring from=email-validated es opcional
+                ENVIRONMENT.URL_FRONTEND + '/login?from=email-validated' 
             ) 
            
         }
@@ -257,7 +242,7 @@ async resetPassword(request, response) {
                 )
             }
 
-            /* Si tiene status decimos que es un error controlado (osea es esperable) */
+            
             if (error.status) {
                 return response.json({
                     status: error.status,

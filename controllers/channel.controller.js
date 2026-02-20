@@ -32,7 +32,7 @@ class ChannelController {
         }
     }
 
-    // --- NUEVAS FUNCIONES ---
+    
 
     async rename(request, response) {
         try {
@@ -70,7 +70,7 @@ class ChannelController {
         }
     }
 
-    // Función auxiliar para no repetir código de errores
+    
     handleError(error, response) {
         console.log("Error en ChannelController", error);
         if (error.status) {

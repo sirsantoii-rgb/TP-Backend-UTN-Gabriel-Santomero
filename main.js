@@ -34,12 +34,12 @@ app.use(cors({
 
 app.use(express.json())
 
-// ----- Routers -----
+
 app.use("/api/auth", authRouter)
 app.use("/api/workspace", workspaceRouter)
 app.use("/api/test", testRouter)
 
-// ----- Conectar MongoDB y arrancar servidor -----
+
 connectMongoDB()
   .then(() => {
     console.log("MongoDB listo, arrancando servidor...")
@@ -50,17 +50,3 @@ connectMongoDB()
     console.error("💥 No se pudo conectar a MongoDB, servidor detenido")
   })
 
-/* async function crearEspacioDeTrabajo (){
-
-    //Creo el espacio de trabajo de prueba
-    const workspace = await workspaceRepository.create(
-        '6980e00796502aef872ebae5', //Remplazen por su id
-        'test',
-        'https://images.pexels.com/photos/414612/pexels-photo-414612.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-        'Descripcion del espacio de trabajo'
-    )
-    //Me agrego como miembro
-    await workspaceRepository.addMember(workspace._id, '6980e00796502aef872ebae5' )
-}
-
-crearEspacioDeTrabajo() */

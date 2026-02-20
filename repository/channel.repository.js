@@ -13,16 +13,16 @@ class ChannelRepository {
         return await Channel.findOne({_id: channel_id, fk_id_workspace: workspace_id})
     }
 
-    // NUEVA: Para renombrar el canal
+    
     async update(channel_id, workspace_id, name){
         return await Channel.findOneAndUpdate(
-            { _id: channel_id, fk_id_workspace: workspace_id }, // Filtro de seguridad
+            { _id: channel_id, fk_id_workspace: workspace_id }, 
             { name: name },
-            { new: true } // Para que devuelva el canal ya modificado
+            { new: true } 
         )
     }
 
-    // NUEVA: Para eliminar el canal
+    
     async delete(channel_id, workspace_id){
     const result = await Channel.findOneAndDelete({
         _id: channel_id, 

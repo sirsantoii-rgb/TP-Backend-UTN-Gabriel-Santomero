@@ -23,7 +23,7 @@ workspaceRouter.post(
 
 workspaceRouter.get('/:workspace_id/members/accept-invitation', workspaceController.acceptInvitation)
 
-// CHANNELS - Listar y crear
+
 workspaceRouter.get(
     '/:workspace_id/channels',
     authMiddleware,
@@ -38,7 +38,7 @@ workspaceRouter.post(
     channelController.create
 )
 
-// CHANNELS - Renombrar y eliminar (NUEVAS RUTAS)
+
 workspaceRouter.put(
     '/:workspace_id/channels/:channel_id',
     authMiddleware,
@@ -73,6 +73,6 @@ workspaceRouter.get(
     '/:workspace_id/members', 
     authMiddleware, 
     workspaceMiddleware(), 
-    workspaceController.getMembers // <--- La función que acabamos de crear
+    workspaceController.getMembers 
 )
 export default workspaceRouter

@@ -56,7 +56,7 @@ class WorkspaceController {
             })
         }
         catch (error) {
-            /* Si tiene status decimos que es un error controlado (osea es esperable) */
+            
             if (error.status) {
                 return response.json({
                     status: error.status,
@@ -133,7 +133,7 @@ class WorkspaceController {
         }
         catch (error) {
             console.log("Error en addMember", error)
-            /* Si tiene status decimos que es un error controlado (osea es esperable) */
+            
             if (error.status) {
                 return response.json({
                     status: error.status,
@@ -157,27 +157,26 @@ class WorkspaceController {
     try {
         const { invitation_token } = request.query;
 
-        // 1. Validar y decodificar el Token
+        
         const payload = jwt.verify(invitation_token, ENVIRONMENT.JWT_SECRET_KEY);
         
-        // IMPORTANTE: En addMemberRequest guardaste el campo como 'workspace'
-        // Así que aquí lo extraemos como 'workspace'
+        
         const { id, workspace, role } = payload; 
 
         console.log("Datos del token decodificados:", { id, workspace, role });
 
-        // 2. Usamos 'workspace' (que es el ID) para buscar y agregar
+        
         const already_member = await workspaceRepository.getMemberByWorkspaceIdAndUserId(workspace, id);
 
         if (!already_member) {
-            // Guardamos usando los datos seguros del token
+            
             await workspaceRepository.addMember(workspace, id, role);
             console.log(`¡Éxito! Usuario ${id} agregado al workspace ${workspace}`);
         } else {
             console.log("El usuario ya era miembro.");
         }
 
-        // 3. Redirección al Front
+        
         return response.redirect(`https://tp-frontend-back-gabriel-santomero-opal.vercel.app/`);
 
     } catch (error) {
@@ -200,7 +199,7 @@ class WorkspaceController {
         }
         catch(error){
             console.log({error})
-            /* Si tiene status decimos que es un error controlado (osea es esperable) */
+            
             if (error.status) {
                 return response.json({
                     status: error.status,
@@ -219,13 +218,13 @@ class WorkspaceController {
         }
     }
 
-    //UTILIZAR ELIMINAR MIEMBRO DE UN ESPACIO DE TRABAJOO
+    
     async deleteMember(request, response) {
     try {
         const { workspace_id, member_id } = request.params
         const current_user_id = request.user.id
         
-        // 1. Verificar que el usuario actual es owner
+        
         const isOwner = await workspaceRepository.isUserOwner(workspace_id, current_user_id)
         if (!isOwner) {
             return response.status(403).json({
@@ -234,10 +233,10 @@ class WorkspaceController {
             })
         }
         
-        // 2. Eliminar el miembro
+        
         await workspaceRepository.removeMember(member_id)
         
-        // 3. Responder
+        
         return response.json({
             ok: true,
             message: 'Miembro eliminado exitosamente'
@@ -256,7 +255,7 @@ class WorkspaceController {
 async getMembers(request, response) {
     try {
         const { workspace_id } = request.params;
-        // Usamos el método 7 que ya tenías en tu repositorio
+        
         const members = await workspaceRepository.getWorkspaceMembers(workspace_id);
         
         response.json({
@@ -273,14 +272,14 @@ async getMembers(request, response) {
         });
     }
 }
-//ACTUALIZAR EL ROL DE UN MIEMBRE DELK GRUPO 
+
 async updateMemberRole(request, response) {
     try {
         const { workspace_id, member_id } = request.params
         const { role } = request.body
         const current_user_id = request.user.id
         
-        // 1. Validar que el rol es válido
+        
         const validRoles = ['admin', 'member', 'guest']
         if (!validRoles.includes(role)) {
             return response.status(400).json({
@@ -289,7 +288,7 @@ async updateMemberRole(request, response) {
             })
         }
         
-        // 2. Verificar permisos
+        
         const isOwner = await workspaceRepository.isUserOwner(workspace_id, current_user_id)
         if (!isOwner) {
             return response.status(403).json({
@@ -298,10 +297,10 @@ async updateMemberRole(request, response) {
             })
         }
         
-        // 3. Actualizar rol
+        
         const updatedMember = await workspaceRepository.updateMemberRole(member_id, role)
         
-        // 4. Responder
+        
         return response.json({
             ok: true,
             message: 'Rol actualizado exitosamente',
